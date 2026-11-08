@@ -51,6 +51,7 @@ jobs:
           repository: UniXNU/uefi-sheng
           path: uefi-sheng
           submodules: recursive
+
       - name: tools
         run: |
           brew install dtc llvm lld cmake mtools ninja glslang shaderc spirv-tools bison pkgconf rustup blacktop/tap/ipsw
@@ -61,7 +62,6 @@ jobs:
             echo "/opt/homebrew/opt/bison/bin"
           } >> "$GITHUB_PATH"
           rustup toolchain install 1.98.0 --profile minimal --component rust-src
-          # Fail fast, naming the tool, before forty minutes of build.
           ok=1
           for t in clang xcodebuild make git ninja cmake dtc fdtget fdtput aea compression_tool \
                    mformat mcopy ipsw; do
@@ -71,6 +71,7 @@ jobs:
             [ -f "/opt/homebrew/opt/llvm/bin/$t" ] || [ -f "/opt/homebrew/opt/lld/bin/$t" ] || { echo "missing tool: $t"; ok=0; }
           done
           [ "$ok" = 1 ]
+
       - name: platform seed
         env:
           seed: ${{ secrets.UNIXNU_UNIQUE_CHIP_ID }}
@@ -79,6 +80,7 @@ jobs:
             echo 'Set the repository secret UNIXNU_UNIQUE_CHIP_ID: the platform seed of the device, 8 hex digits.' >&2
             exit 1
           fi
+
       - name: seed cache identity
         id: seed-key
         env:
@@ -89,6 +91,7 @@ jobs:
           with open(os.environ['GITHUB_OUTPUT'], 'a') as out:
               out.write('key=data-seed-v1-' + hashlib.sha256(os.environ['SEED'].encode()).hexdigest()[:16] + '\n')
           PY
+
       - uses: actions/cache/restore@v4
         id: data-cache
         if: inputs.os == '27'
@@ -97,6 +100,7 @@ jobs:
             UniXNU/out/sheng/ipados-27.0.1-24A446/sheng_ipados27/runtime/data.dbr
             UniXNU/out/sheng/ipados-27.0.1-24A446/sheng_ipados27/runtime/inputs.json
           key: ${{ steps.seed-key.outputs.key }}-${{ inputs.os }}
+
       - name: prepare preserved Data seed
         if: inputs.os == '27'
         env:
@@ -122,6 +126,7 @@ jobs:
           if not path.is_file() and os.environ['INIT_DATA'] != 'true':
               raise SystemExit('No saved seed. Supply the ORIGINAL seed for an existing installation, or select init_data for a FIRST installation')
           PY
+
       - name: package
         working-directory: device
         env:
@@ -135,6 +140,16 @@ jobs:
             args+=(--init-data)
           fi
           scripts/package.sh "${args[@]}"
+
+      - name: upload runtime log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-log-${{ inputs.os }}
+          path: UniXNU/out/sheng/ipados-27.0.1-24A446/sheng_ipados27/logs/runtime.log
+          if-no-files-found: warn
+          retention-days: 1
+
       - uses: actions/cache/save@v4
         if: always() && inputs.os == '27' && steps.data-cache.outputs.cache-hit != 'true' && hashFiles('UniXNU/out/sheng/ipados-27.0.1-24A446/sheng_ipados27/runtime/data.dbr') != ''
         with:
@@ -142,6 +157,7 @@ jobs:
             UniXNU/out/sheng/ipados-27.0.1-24A446/sheng_ipados27/runtime/data.dbr
             UniXNU/out/sheng/ipados-27.0.1-24A446/sheng_ipados27/runtime/inputs.json
           key: ${{ steps.seed-key.outputs.key }}-${{ inputs.os }}
+
       - name: installation seed backup
         if: always() && inputs.os == '27' && hashFiles('UniXNU/out/sheng/ipados-27.0.1-24A446/sheng_ipados27/runtime/data.dbr') != ''
         uses: actions/upload-artifact@v4
@@ -151,6 +167,7 @@ jobs:
           path: |
             UniXNU/out/sheng/*/*/runtime/data.dbr
             UniXNU/out/sheng/*/*/runtime/inputs.json
+
       - name: images
         uses: actions/upload-artifact@v4
         with:
