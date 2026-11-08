@@ -135,6 +135,14 @@ jobs:
             args+=(--init-data)
           fi
           scripts/package.sh "${args[@]}"
+      - name: upload runtime log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-log-${{ inputs.os }}
+          path: UniXNU/out/sheng/ipados-27.0.1-24A446/sheng_ipados27/logs/runtime.log
+          if-no-files-found: warn
+          retention-days: 1
       - uses: actions/cache/save@v4
         if: always() && inputs.os == '27' && steps.data-cache.outputs.cache-hit != 'true' && hashFiles('UniXNU/out/sheng/ipados-27.0.1-24A446/sheng_ipados27/runtime/data.dbr') != ''
         with:
