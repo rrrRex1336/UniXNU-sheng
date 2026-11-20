@@ -43,7 +43,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: UniXNU/UniXNU
-          ref: 563595abedfdfa413ad583b66b6176d82007e633 # update UniXNU pin (fixes turnip-frame-diagnostics.patch)
+          # PR #315 (fix/ios27-metal-bridge) on top of the turnip patch fix; the
+          # AdrenoMetal gitlink points at the PR #71 commit, which GitHub serves
+          # from UniXNU/AdrenoMetal as refs/pull/71/head.
+          ref: b3392c9f88116855bf4309f1eb9f036459da2685
           path: UniXNU
           submodules: recursive
       - uses: actions/checkout@v4
