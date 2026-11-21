@@ -23,6 +23,10 @@ on:
       data_seed_sha256:
         description: "Required SHA-256 when data_seed_url is supplied"
         type: string
+      storage_partition:
+        description: "GPT partition UniXNU roots from: userdata, or a dedicated one such as apple"
+        type: string
+        default: "userdata"
 
 permissions:
   contents: read
@@ -148,6 +152,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           INIT_DATA: ${{ inputs.init_data }}
           OS_PROFILE: ${{ inputs.os }}
+          UNIXNU_STORAGE_PARTITION: ${{ inputs.storage_partition }}
         run: |
           args=(--os "$OS_PROFILE" --uefi ../uefi-sheng)
           if [ "$OS_PROFILE" = 27 ] && [ "$INIT_DATA" = true ]; then

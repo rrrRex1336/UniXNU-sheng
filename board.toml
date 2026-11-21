@@ -17,7 +17,7 @@
 
 ["kernel"]
 "defconfig" = "sheng_ipados27_defconfig"
-"archives" = ["build-corecrypto-14.py", "build-corecrypto-14.py --namespace", "component:ArmDTPlatform", "component:ArmCpu", "build-libpthread-kernel.py", "component:ShengUfs", "build-sheng-source-storage.py --policy-dir scripts/policies/ipados-27.0.1-24A446", "component:RamBlock", "component:Adreno740", "fetch-sheng-dts.py", "fetch-adreno-inputs.py", "prepare-sheng-gmu.py", "prepare-sheng-gpu-smmu.py", "prepare-sheng-gmu-votes.py", "build-adreno740-kits.py", "build-adreno740-accelerator.py", "component:AppleKeyStoreState", "build-gop-legacy-display-27.py", "build-fileset-release-reference.py --tree . --lto"]
+"archives" = ["build-corecrypto-14.py", "build-corecrypto-14.py --namespace", "component:ArmDTPlatform", "component:ArmCpu", "build-libpthread-kernel.py", "set-storage-partition.py", "component:ShengUfs", "build-sheng-source-storage.py --policy-dir scripts/policies/ipados-27.0.1-24A446", "component:RamBlock", "component:Adreno740", "fetch-sheng-dts.py", "fetch-adreno-inputs.py", "prepare-sheng-gmu.py", "prepare-sheng-gpu-smmu.py", "prepare-sheng-gmu-votes.py", "build-adreno740-kits.py", "build-adreno740-accelerator.py", "component:AppleKeyStoreState", "build-gop-legacy-display-27.py", "build-fileset-release-reference.py --tree . --lto"]
 "config_fragments" = ["arch:configs/common.config", "os:configs/ipados.config"]
 "patch_series" = ["arch:patches/xnu/series", "soc:patches/xnu-12377/series", "os:patches/xnu/series", "device:patches/xnu-12377/series"]
 
@@ -176,7 +176,7 @@ ramdisk_max_bytes = 199229440
 "include" = ["ArmDTPlatform", "ArmCpu", "SoftwareAES", "ShengUfs", "VirtioMmioBlock", "RamBlock", "Adreno740", "AdrenoMetal", "GopFramebuffer", "ShengHidInput", "ShengNovatekTouch", "QcomGeniSpi", "AppleKeyStoreState", "XnuPrelink", "DarwinBoot", "VerifiedRoot", "ShengPreflight", "AirNir", "Ath12kWifi"]
 
 ["os_overrides"."ipados-17.7.11-21H461"."kernel"]
-"archives" = ["build-corecrypto-14.py", "build-corecrypto-14.py --namespace", "component:ArmDTPlatform", "component:ArmCpu", "component:SoftwareAES", "build-software-aes-bindings.py", "component:ShengUfs", "component:VirtioMmioBlock", "component:RamBlock", "build-virtio-mmio-bindings.py --component RamBlock --directory build/ram-block", "build-virtio-mmio-bindings.py --component VirtioMmioBlock", "build-mockfs-fixture.py", "build-sheng-platform-power.py", "build-boot-progress.py", "build-libpthread-kernel.py", "component:Adreno740", "build-adreno740-kits.py", "build-adreno740-accelerator.py", "component:ShengHidInput", "component:AppleKeyStoreState", "build-gop-legacy-display.py"]
+"archives" = ["build-corecrypto-14.py", "build-corecrypto-14.py --namespace", "component:ArmDTPlatform", "component:ArmCpu", "component:SoftwareAES", "build-software-aes-bindings.py", "set-storage-partition.py", "component:ShengUfs", "component:VirtioMmioBlock", "component:RamBlock", "build-virtio-mmio-bindings.py --component RamBlock --directory build/ram-block", "build-virtio-mmio-bindings.py --component VirtioMmioBlock", "build-mockfs-fixture.py", "build-sheng-platform-power.py", "build-boot-progress.py", "build-libpthread-kernel.py", "component:Adreno740", "build-adreno740-kits.py", "build-adreno740-accelerator.py", "component:ShengHidInput", "component:AppleKeyStoreState", "build-gop-legacy-display.py"]
 "config_fragments" = ["arch:configs/common.config", "soc:configs/sm8550.config", "os:configs/ipados.config"]
 "defconfig" = "sheng_defconfig"
 "patch_series" = ["arch:patches/xnu/series", "soc:patches/xnu/series", "os:patches/xnu/series", "device:patches/xnu/series"]
@@ -196,7 +196,7 @@ ramdisk_max_bytes = 199229440
 "include" = ["ArmDTPlatform", "ArmCpu", "SoftwareAES", "ShengUfs", "VirtioMmioBlock", "RamBlock", "Adreno740", "AdrenoMetal", "GopFramebuffer", "ShengHidInput", "ShengNovatekTouch", "QcomGeniSpi", "AppleKeyStoreState", "XnuPrelink", "DarwinBoot", "VerifiedRoot", "ShengPreflight", "AirNir", "Ath12kWifi"]
 
 ["os_overrides"."ipados-26.5.2-23F84"."kernel"]
-"archives" = ["build-corecrypto-14.py", "build-corecrypto-14.py --namespace", "component:ArmDTPlatform", "component:ArmCpu", "component:SoftwareAES", "build-software-aes-bindings.py", "component:ShengUfs", "build-sheng-source-storage.py --policy-dir scripts/policies/ipados-26.5.2-23F84", "component:VirtioMmioBlock", "component:RamBlock", "build-virtio-mmio-bindings.py --component RamBlock --directory build/ram-block", "build-virtio-mmio-bindings.py --component VirtioMmioBlock", "build-mockfs-fixture.py", "build-sheng-platform-power.py", "build-boot-progress.py", "build-libpthread-kernel.py", "component:Adreno740", "build-adreno740-kits.py", "build-adreno740-accelerator.py", "component:ShengHidInput", "component:AppleKeyStoreState", "build-gop-legacy-display.py"]
+"archives" = ["build-corecrypto-14.py", "build-corecrypto-14.py --namespace", "component:ArmDTPlatform", "component:ArmCpu", "component:SoftwareAES", "build-software-aes-bindings.py", "set-storage-partition.py", "component:ShengUfs", "build-sheng-source-storage.py --policy-dir scripts/policies/ipados-26.5.2-23F84", "component:VirtioMmioBlock", "component:RamBlock", "build-virtio-mmio-bindings.py --component RamBlock --directory build/ram-block", "build-virtio-mmio-bindings.py --component VirtioMmioBlock", "build-mockfs-fixture.py", "build-sheng-platform-power.py", "build-boot-progress.py", "build-libpthread-kernel.py", "component:Adreno740", "build-adreno740-kits.py", "build-adreno740-accelerator.py", "component:ShengHidInput", "component:AppleKeyStoreState", "build-gop-legacy-display.py"]
 "config_fragments" = ["arch:configs/common.config", "soc:configs/sm8550.config", "os:configs/ipados.config"]
 "defconfig" = "sheng_ipados26_defconfig"
 
@@ -217,7 +217,7 @@ ramdisk_max_bytes = 199229440
 
 ["os_overrides"."macos-27.3-26C5035r"."kernel"]
 "config_fragments" = ["arch:configs/common.config", "os:configs/macos.config"]
-"archives" = ["build-corecrypto-14.py", "build-corecrypto-14.py --namespace", "component:ArmDTPlatform", "component:ArmCpu", "build-libpthread-kernel.py", "component:ShengUfs", "component:RamBlock", "component:Adreno740", "fetch-sheng-dts.py", "fetch-adreno-inputs.py", "prepare-sheng-gmu.py", "prepare-sheng-gpu-smmu.py", "prepare-sheng-gmu-votes.py", "build-adreno740-kits.py", "build-adreno740-accelerator.py", "component:SoftwareAES", "component:AppleKeyStoreState", "build-gop-legacy-display-27.py"]
+"archives" = ["build-corecrypto-14.py", "build-corecrypto-14.py --namespace", "component:ArmDTPlatform", "component:ArmCpu", "build-libpthread-kernel.py", "set-storage-partition.py", "component:ShengUfs", "component:RamBlock", "component:Adreno740", "fetch-sheng-dts.py", "fetch-adreno-inputs.py", "prepare-sheng-gmu.py", "prepare-sheng-gpu-smmu.py", "prepare-sheng-gmu-votes.py", "build-adreno740-kits.py", "build-adreno740-accelerator.py", "component:SoftwareAES", "component:AppleKeyStoreState", "build-gop-legacy-display-27.py"]
 
 ["os_overrides"."macos-27.3-26C5035r"."payload"]
 "timeout" = 1
