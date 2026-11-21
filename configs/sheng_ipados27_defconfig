@@ -1,6 +1,9 @@
 CONFIG_XNU_BUILD_ARCHIVES=y
 # The fileset must fit native code between the retained kexts and collection data.
+# The fileset must fit native code between the retained kexts and collection data. The
+# package does not map CONFIG_XNU_OPTIMIZE_FOR_SIZE to flags yet, so ask for -Oz directly.
 CONFIG_XNU_OPTIMIZE_FOR_SIZE=y
+CONFIG_XNU_EXTRA_CFLAGS="-Oz"
 CONFIG_XNU_CRYPTO_BOOTSTRAP="source"
 CONFIG_XNU_DT_PANIC_REGION=y
 CONFIG_XNU_ARMVIRT_PLATFORM=n
