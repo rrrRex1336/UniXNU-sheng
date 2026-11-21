@@ -232,10 +232,10 @@ jobs:
                   for i in range(count):
                       if fmt == 1:
                           raw, = struct.unpack_from('<I', d, dataoff + imports_off + 4 * i)
-                          weak, name_off = (raw >> 23) & 1, raw & 0x7fffff
+                          weak, name_off = (raw >> 8) & 1, raw >> 9
                       elif fmt == 2:
                           raw, addend = struct.unpack_from('<Ii', d, dataoff + imports_off + 8 * i)
-                          weak, name_off = (raw >> 23) & 1, raw & 0x7fffff
+                          weak, name_off = (raw >> 8) & 1, raw >> 9
                       else:
                           print('unhandled imports format', fmt); raise SystemExit(0)
                       start = dataoff + symbols_off + name_off

@@ -1,8 +1,8 @@
 diff --git a/bsd/kern/kern_exec.c b/bsd/kern/kern_exec.c
-index 2467b24..485e78d 100644
+index 2467b24..e7cf469 100644
 --- a/bsd/kern/kern_exec.c
 +++ b/bsd/kern/kern_exec.c
-@@ -9076,3 +9076,50 @@ SYSCTL_PROC(_kern, OID_AUTO, is_mte_enabled,
+@@ -9076,3 +9076,54 @@ SYSCTL_PROC(_kern, OID_AUTO, is_mte_enabled,
      CTLTYPE_INT | CTLFLAG_RD | CTLFLAG_LOCKED,
      0, 0, sysctl_is_mte_enabled, "I", "Return whether MTE is enabled");
  #endif /* HAS_MTE && (DEBUG || DEVELOPMENT) */
@@ -12,17 +12,20 @@ index 2467b24..485e78d 100644
 + *
 + * RamBlock and Adreno740 reference ml_static_mfree_prepare() (payload-addon-release.patch) and
 + * iokit_physical_descriptor_close_notify() (gpupool-device-pager-close.patch) as weak imports. The
-+ * iPadOS profiles ship neither patch, and on arm64e the address-of check that guards each call emits an
-+ * authenticated pointer stub that the linker cannot leave undefined, so the kernel link fails. Define the
-+ * hooks here for the profiles that lack them: no loader memory is released and no pager-close report is
-+ * delivered, which is the behavior the components already take when the symbols are absent.
++ * macOS profile defines both; the iPadOS profiles ship neither patch, and on arm64e the address-of
++ * checks that guard each call keep the references in the chained-fixup imports table, which the
++ * prelink matcher refuses. Define the hooks for the Apple-platform profiles that lack them: no loader
++ * memory is released and no pager-close report is delivered, which is the behavior the components
++ * already take when the symbols are absent. They are unguarded by a weak attribute because the guarded
++ * address-of keeps the reference weak at link time, and a weak definition leaves it in the imports table;
++ * XNU_TARGET_OS_OSX keeps the macOS profile, which links the real implementations, out of this block.
 + *
 + * boot_cache_input_capture() and sheng_boot_watchdog_policy() come from libBootProgress.a, which only
 + * enters the link with the boot-progress build; without it the same weak references stay undefined and
-+ * land in the chained-fixup imports table, where the prelink matcher refuses them. The fallbacks keep the
-+ * two diagnostics inert instead of failing the link.
++ * land in the imports table too. Their fallbacks keep the two diagnostics inert.
 + */
-+__attribute__((weak)) int
++#ifndef XNU_TARGET_OS_OSX
++int
 +ml_static_mfree_prepare(vm_offset_t vaddr, vm_size_t size)
 +{
 +	(void)vaddr;
@@ -30,7 +33,7 @@ index 2467b24..485e78d 100644
 +	return 0;
 +}
 +
-+__attribute__((weak)) kern_return_t
++kern_return_t
 +iokit_physical_descriptor_close_notify(void *descriptor, void (*handler)(void *), void *context)
 +{
 +	(void)descriptor;
@@ -38,6 +41,7 @@ index 2467b24..485e78d 100644
 +	(void)context;
 +	return KERN_FAILURE;
 +}
++#endif
 +
 +__attribute__((weak)) void
 +boot_cache_input_capture(user_addr_t address, uint64_t value)
