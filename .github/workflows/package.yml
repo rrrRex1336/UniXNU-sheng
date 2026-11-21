@@ -212,6 +212,15 @@ jobs:
             UniXNU/out/sheng/*/*/payload/payload.img
             UniXNU/out/sheng/*/*/kernel/kernel.macho
             UniXNU/out/sheng/*/*/package.manifest.json
+      - name: kernel imports
+        if: failure()
+        run: |
+          for k in UniXNU/out/sheng/*/*/tree/build/xnu/ios-obj/*/mach.development.bcm2837.unstripped.noctf; do
+            [ -f "$k" ] || continue
+            echo "=== $k"
+            xcrun dyld_info -imports "$k" 2>&1 | head -80 || true
+          done
+          tail -n 80 UniXNU/out/sheng/*/*/logs/prelink.log 2>/dev/null || true
       - name: print failure logs
         if: failure()
         run: |
