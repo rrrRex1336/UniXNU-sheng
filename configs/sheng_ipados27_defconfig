@@ -6,9 +6,6 @@ CONFIG_XNU_DT_PANIC_REGION=y
 CONFIG_XNU_ARMVIRT_PLATFORM=n
 CONFIG_XNU_EXTRA_LD_ARCHIVES="-Wl,-force_load,{tree}/build/sheng-source-storage/libShengSourceStorage.a"
 CONFIG_XNU_KERNEL_CHAINED_FIXUPS=y
-# The boot-log hooks the patches call weakly live in libBootProgress.a; without it the
-# chained-fixup imports stay unresolved and the prelink step rejects the kernel.
-CONFIG_XNU_BOOT_PROGRESS=y
 # The boot image carries the signed policy headers; their hash tables are userdata objects.
 CONFIG_XNU_SOURCE_STORAGE_TABLES="userdata"
 # Owner-verified UFS windows from the source storage archive authorize the mounted root.
