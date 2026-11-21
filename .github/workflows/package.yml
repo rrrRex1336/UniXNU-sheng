@@ -218,9 +218,46 @@ jobs:
           for k in UniXNU/out/sheng/*/*/tree/build/xnu/ios-obj/*/mach.development.bcm2837.unstripped.noctf; do
             [ -f "$k" ] || continue
             echo "=== $k"
-            xcrun dyld_info -imports "$k" 2>&1 | head -80 || true
+            python3 - "$k" <<'PY'
+          import struct, sys
+          d = open(sys.argv[1], 'rb').read()
+          magic, cputype, cpusubtype, filetype, ncmds, sizeofcmds, flags, res = struct.unpack_from('<IiiIIIII', d, 0)
+          off = 32
+          for _ in range(ncmds):
+              cmd, cmdsize = struct.unpack_from('<II', d, off)
+              if cmd == 0x80000034:
+                  dataoff, datasize = struct.unpack_from('<II', d, off + 8)
+                  version, starts, imports_off, symbols_off, count, fmt, symfmt = struct.unpack_from('<7I', d, dataoff)
+                  print(f'LC_DYLD_CHAINED_FIXUPS imports_count={count} imports_format={fmt} symbols_format={symfmt}')
+                  for i in range(count):
+                      if fmt == 1:
+                          raw, = struct.unpack_from('<I', d, dataoff + imports_off + 4 * i)
+                          weak, name_off = (raw >> 23) & 1, raw & 0x7fffff
+                      elif fmt == 2:
+                          raw, addend = struct.unpack_from('<Ii', d, dataoff + imports_off + 8 * i)
+                          weak, name_off = (raw >> 23) & 1, raw & 0x7fffff
+                      else:
+                          print('unhandled imports format', fmt); raise SystemExit(0)
+                      start = dataoff + symbols_off + name_off
+                      end = d.index(b'\0', start)
+                      print(('weak ' if weak else 'strong ') + d[start:end].decode())
+                  raise SystemExit(0)
+              off += cmdsize
+          print('no LC_DYLD_CHAINED_FIXUPS')
+          PY
           done
-          tail -n 80 UniXNU/out/sheng/*/*/logs/prelink.log 2>/dev/null || true
+          tail -n 40 UniXNU/out/sheng/*/*/logs/prelink.log 2>/dev/null || true
+      - name: kernel binary
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kernel-${{ inputs.os }}
+          retention-days: 1
+          compression-level: 6
+          if-no-files-found: warn
+          path: |
+            UniXNU/out/sheng/*/*/tree/build/xnu/ios-obj/*/mach.development.bcm2837.unstripped.noctf
+            UniXNU/out/sheng/*/*/logs/prelink.log
       - name: print failure logs
         if: failure()
         run: |
