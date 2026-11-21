@@ -1,0 +1,35 @@
+diff --git a/bsd/kern/kern_exec.c b/bsd/kern/kern_exec.c
+index 2467b24..f3a6f90 100644
+--- a/bsd/kern/kern_exec.c
++++ b/bsd/kern/kern_exec.c
+@@ -9076,3 +9076,30 @@ SYSCTL_PROC(_kern, OID_AUTO, is_mte_enabled,
+     CTLTYPE_INT | CTLFLAG_RD | CTLFLAG_LOCKED,
+     0, 0, sysctl_is_mte_enabled, "I", "Return whether MTE is enabled");
+ #endif /* HAS_MTE && (DEBUG || DEVELOPMENT) */
++
++/*
++ * Fallbacks for the macOS-only kernel hooks.
++ *
++ * RamBlock and Adreno740 reference ml_static_mfree_prepare() (payload-addon-release.patch) and
++ * iokit_physical_descriptor_close_notify() (gpupool-device-pager-close.patch) as weak imports. The
++ * iPadOS profiles ship neither patch, and on arm64e the address-of check that guards each call emits an
++ * authenticated pointer stub that the linker cannot leave undefined, so the kernel link fails. Define the
++ * hooks here for the profiles that lack them: no loader memory is released and no pager-close report is
++ * delivered, which is the behavior the components already take when the symbols are absent.
++ */
++__attribute__((weak)) int
++ml_static_mfree_prepare(vm_offset_t vaddr, vm_size_t size)
++{
++	(void)vaddr;
++	(void)size;
++	return 0;
++}
++
++__attribute__((weak)) kern_return_t
++iokit_physical_descriptor_close_notify(void *descriptor, void (*handler)(void *), void *context)
++{
++	(void)descriptor;
++	(void)handler;
++	(void)context;
++	return KERN_FAILURE;
++}
