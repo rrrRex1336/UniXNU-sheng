@@ -27,6 +27,10 @@ on:
         description: "GPT partition UniXNU roots from: userdata, or a dedicated one such as apple"
         type: string
         default: "userdata"
+      build_userdata:
+        description: "Build and upload the userdata root image (OS + SystemOS, ~9 GiB, split)"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -159,6 +163,28 @@ jobs:
             args+=(--init-data)
           fi
           scripts/package.sh "${args[@]}"
+      - name: userdata image
+        if: inputs.build_userdata
+        working-directory: device
+        run: |
+          python3 ../UniXNU/unixnu build userdata -D . --os "${{ inputs.os }}"
+      - name: split userdata image
+        if: inputs.build_userdata && hashFiles('UniXNU/out/sheng/*/*/userdata/userdata-root.img') != ''
+        run: |
+          cd UniXNU/out/sheng/*/*/userdata
+          split -b 1900M -d -a 2 userdata-root.img userdata-root.img.part-
+          sha256sum userdata-root.img > userdata-root.img.sha256
+          ls -l userdata-root.img.part-* userdata-root.img.sha256 userdata-root.json
+      - uses: actions/upload-artifact@v4
+        if: inputs.build_userdata && hashFiles('UniXNU/out/sheng/*/*/userdata/userdata-root.img') != ''
+        with:
+          name: userdata-${{ inputs.os }}
+          retention-days: 1
+          compression-level: 0
+          path: |
+            UniXNU/out/sheng/*/*/userdata/userdata-root.img.part-*
+            UniXNU/out/sheng/*/*/userdata/userdata-root.img.sha256
+            UniXNU/out/sheng/*/*/userdata/userdata-root.json
       - uses: actions/cache/save@v4
         if: always() && inputs.os == '27' && steps.data-cache.outputs.cache-hit != 'true' && hashFiles('UniXNU/out/sheng/ipados-27.0.1-24A446/sheng_ipados27/runtime/data.dbr') != ''
         with:
