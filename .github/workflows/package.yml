@@ -31,6 +31,10 @@ on:
         description: "Build and upload the userdata root image (OS + SystemOS, ~9 GiB, split)"
         type: boolean
         default: false
+      os_version:
+        description: "Android boot header os_version to write (hex, e.g. 0x220001a8); empty keeps the image's"
+        type: string
+        default: ""
 
 permissions:
   contents: read
@@ -163,6 +167,12 @@ jobs:
             args+=(--init-data)
           fi
           scripts/package.sh "${args[@]}"
+      - name: boot header os_version
+        if: inputs.os_version != ''
+        run: |
+          for img in UniXNU/out/sheng/*/*/boot/boot.img; do
+            python3 device/scripts/patch-boot-os-version.py "$img" "${{ inputs.os_version }}"
+          done
       - name: userdata image
         if: inputs.build_userdata
         working-directory: device
