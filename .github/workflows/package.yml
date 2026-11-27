@@ -176,7 +176,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: installation-seed-${{ inputs.os }}
-          retention-days: 1
+          retention-days: 7
           path: |
             UniXNU/out/sheng/*/*/runtime/data.dbr
             UniXNU/out/sheng/*/*/runtime/inputs.json
@@ -184,7 +184,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: images-${{ inputs.os }}
-          retention-days: 1
+          retention-days: 7
           if-no-files-found: error
           path: |
             UniXNU/out/sheng/*/*/boot/boot.img
@@ -204,7 +204,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-logs-${{ inputs.os }}
-          retention-days: 1
+          retention-days: 7
           path: |
             UniXNU/out/sheng/*/*/logs/*.log
             UniXNU/out/sheng/*/*/kernel/*.json
