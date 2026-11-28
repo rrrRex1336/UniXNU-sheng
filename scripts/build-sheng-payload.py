@@ -296,7 +296,7 @@ path = "Payloads/kernel.macho"
 '''
     (STAGE / 'EFI/UniXNU/unixnu.toml').write_text(f'''version = 1
 [boot]
-timeout = 3
+timeout = 30
 default = "xnu"
 [kits]
 autoload = false
