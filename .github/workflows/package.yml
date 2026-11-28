@@ -133,6 +133,15 @@ jobs:
           if not path.is_file() and os.environ['INIT_DATA'] != 'true':
               raise SystemExit('No saved seed. Supply the ORIGINAL seed for an existing installation, or select init_data for a FIRST installation')
           PY
+      - uses: actions/cache/restore@v4
+        id: ipsw-cache
+        with:
+          path: |
+            UniXNU/out/ipsw/*/kernelcache*
+            UniXNU/out/ipsw/*/*.im4p
+            UniXNU/out/ipsw/*/*TrustCache*
+            UniXNU/out/ipsw/*/*trustcache*
+          key: ipsw-members-${{ inputs.os }}-v1
       - name: prepare device sources and firmware
         working-directory: device
         run: |
@@ -180,6 +189,15 @@ jobs:
           path: |
             UniXNU/out/sheng/*/*/runtime/data.dbr
             UniXNU/out/sheng/*/*/runtime/inputs.json
+      - uses: actions/cache/save@v4
+        if: always() && steps.ipsw-cache.outputs.cache-hit != 'true'
+        with:
+          path: |
+            UniXNU/out/ipsw/*/kernelcache*
+            UniXNU/out/ipsw/*/*.im4p
+            UniXNU/out/ipsw/*/*TrustCache*
+            UniXNU/out/ipsw/*/*trustcache*
+          key: ipsw-members-${{ inputs.os }}-v1
       - name: images
         uses: actions/upload-artifact@v4
         with:
